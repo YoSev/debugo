@@ -28,7 +28,10 @@ func (l *Logger) Debug(message ...any) {
 			stringMessages[i] = fmt.Sprintf("%v", formatValue(v))
 		}
 
-		fmt.Fprintf(os.Stderr, "%s ", l.applyColor(l.namespace))
+		if len(l.namespace) > 0 {
+			fmt.Fprintf(os.Stderr, "%s ", l.applyColor(l.namespace))
+		}
+
 		fmt.Fprintf(os.Stderr, "%+v ", resetColor(strings.Join(stringMessages, " ")))
 		fmt.Fprintf(os.Stderr, "%s\n", l.applyColor(fmt.Sprintf("+%s", prettyPrintDuration(l.elapsed()))))
 	}

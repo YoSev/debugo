@@ -79,6 +79,8 @@ var colorCodes = map[string]string{
 
 var usedColors = []string{}
 
+var usedColorMapping = make(map[string]string)
+
 func (l *Logger) applyColor(text string) string {
 	colorCode, ok := colorCodes[l.color]
 	if !ok {
@@ -93,6 +95,11 @@ func resetColor(str string) string {
 }
 
 func (l *Logger) getNextColor() string {
+	// different loggers with the same namespace will always share the same color
+	if color, ok := usedColorMapping[l.namespace]; ok {
+		return color
+	}
+
 	rand.Seed(uint64(time.Now().UnixNano()))
 
 	colorNames := []string{}
@@ -113,6 +120,7 @@ func (l *Logger) getNextColor() string {
 	}
 
 	usedColors = append(usedColors, randomColor)
+	usedColorMapping[l.namespace] = randomColor
 
 	return randomColor
 }
