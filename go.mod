@@ -1,4 +1,4 @@
-module github.com/sev-wtf/debugo
+module github.com/yosev/debugo
 
 go 1.23.0
 
