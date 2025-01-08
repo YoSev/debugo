@@ -53,6 +53,15 @@ func TestMatchNamespace(t *testing.T) {
 	// Invalid patterns
 	SetDebug("--test:*")
 	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+
+	// Forces instance must always match
+	SetDebug("")
+	_, l = NewWithOptions("test:b", &Options{ForceEnable: true})
+	assert.Equal(t, l.matchNamespace(), true, "they should be equal")
+
+	// Forces instance must always match
+	_, l = NewWithOptions("test:b", nil)
+	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
 }
 
 func TestMatchPattern(t *testing.T) {

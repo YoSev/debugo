@@ -18,7 +18,7 @@ func (l *Logger) Enabled() bool {
 }
 
 func (l *Logger) matchNamespace() bool {
-	if debug == "*" {
+	if l.forced || debug == "*" {
 		return true
 	}
 
