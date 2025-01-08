@@ -4,6 +4,9 @@
 
 debugo is a lightweight Go implementation inspired by the popular [debug-js](https://github.com/debug-js/debug) library. This package aims to provide simple, human-friendly debugging output for Go developers.
 
+![CI](https://github.com/yosev/debugo/actions/workflows/go.test.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Features
 
 - Namespace-based (colored) debugging to categorize log output.
