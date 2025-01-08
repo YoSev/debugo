@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func (l *Logger) debug(message ...any) {
+func (l *Logger) write(message ...any) {
 	if l.matchNamespace() {
 		stringMessages := make([]string, len(message))
 		for i, v := range message {

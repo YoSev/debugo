@@ -33,7 +33,7 @@ func NewWithOptions(namespace string, options *Options) (func(message ...any), *
 	logger.applyOptions(options)
 
 	return func(message ...any) {
-		logger.debug(message...)
+		logger.write(message...)
 	}, logger
 }
 
@@ -47,7 +47,7 @@ func New(namespace string) (func(message ...any), *Logger) {
 	})
 
 	return func(message ...any) {
-		logger.debug(message...)
+		logger.write(message...)
 	}, logger
 }
 
