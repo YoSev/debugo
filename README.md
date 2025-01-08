@@ -2,7 +2,7 @@
 
 <img width="647" src="https://github.com/user-attachments/assets/2b5d9516-ae54-4868-ae5b-c9cef13015cc" alt="debugo" />
 
-debugo is a lightweight Go implementation inspired by the popular [debug-js](https://github.com/debug-js/debug) library. This package aims to provide simple, human-friendly debugging output for Go developers.
+debugo is a lightweight Go implementation inspired by the popular [debug-js](https://github.com/debug-js/debug) library. This package aims to provide simple, human-friendly and foremost fine-graded debugging output for Go developers.
 
 ![CI](https://github.com/yosev/debugo/actions/workflows/go.test.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
