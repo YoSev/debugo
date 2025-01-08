@@ -13,26 +13,22 @@ type Logger struct {
 	lastLog   time.Time
 }
 
-func New(namespace string) *Logger {
-	logger := &Logger{namespace: namespace}
+func New(namespace string) (func(message ...any), *Logger) {
+	logger := &Logger{namespace: namespace, lastLog: time.Now()}
 	logger.color = logger.getNextColor()
 
-	return logger
+	return func(message ...any) {
+		logger.debug(message...)
+	}, logger
 }
 
-func (l *Logger) Debug(message ...any) {
+func (l *Logger) debug(message ...any) {
 	if l.matchNamespace() {
-
 		stringMessages := make([]string, len(message))
 		for i, v := range message {
 			stringMessages[i] = fmt.Sprintf("%v", formatValue(v))
 		}
 
-		if len(l.namespace) > 0 {
-			fmt.Fprintf(os.Stderr, "%s ", l.applyColor(l.namespace))
-		}
-
-		fmt.Fprintf(os.Stderr, "%+v ", resetColor(strings.Join(stringMessages, " ")))
-		fmt.Fprintf(os.Stderr, "%s\n", l.applyColor(fmt.Sprintf("+%s", prettyPrintDuration(l.elapsed()))))
+		fmt.Fprintf(os.Stderr, "%s %s %s\n", l.applyColor(l.namespace), resetColor(strings.Join(stringMessages, " ")), l.applyColor(fmt.Sprintf("+%s", prettyPrintDuration(l.elapsed()))))
 	}
 }
