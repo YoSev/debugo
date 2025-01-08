@@ -8,7 +8,6 @@ import (
 )
 
 func prettyPrintDuration(d time.Duration) string {
-	// Break down the duration into hours, minutes, seconds, and milliseconds
 	hours := d / time.Hour
 	d %= time.Hour
 	minutes := d / time.Minute
@@ -17,7 +16,6 @@ func prettyPrintDuration(d time.Duration) string {
 	d %= time.Second
 	milliseconds := d / time.Millisecond
 
-	// Build the formatted string dynamically
 	result := ""
 	if hours > 0 {
 		result += fmt.Sprintf("%dh", hours)
@@ -28,7 +26,9 @@ func prettyPrintDuration(d time.Duration) string {
 	if seconds > 0 || minutes > 0 || hours > 0 {
 		result += fmt.Sprintf("%ds", seconds)
 	}
-	result += fmt.Sprintf("%dms", milliseconds) // Always include milliseconds
+	if milliseconds != 0 {
+		result += fmt.Sprintf("%dms", milliseconds)
+	}
 	return result
 }
 
