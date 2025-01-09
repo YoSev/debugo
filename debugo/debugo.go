@@ -13,6 +13,7 @@ type Logger struct {
 	lastLog   time.Time
 	forced    bool
 	output    *os.File
+	channel   chan string
 }
 
 // Options overwrites debugs default values
@@ -25,32 +26,37 @@ type Options struct {
 	Color *color.Color
 	// Defines the pipe to output to, eg. stdOut (default: stdErr)
 	Output *os.File
+	// Write log files in their own go routine (maintains order)
+	Threaded bool
 }
 
 // Returns a log-function and an instance of Logger configured using options
-func NewWithOptions(namespace string, options *Options) (func(message ...any), *Logger) {
+func NewWithOptions(namespace string, options *Options) func(message ...any) {
 	logger := new(namespace)
 	logger.applyOptions(options)
-
-	return func(message ...any) {
-		logger.write(message...)
-	}, logger
+	return logFunc(logger)
 }
 
 // Returns a log-function and an instance of Logger configured with default values
-func New(namespace string) (func(message ...any), *Logger) {
+func New(namespace string) func(message ...any) {
 	logger := new(namespace)
 	logger.applyOptions(&Options{
 		ForceEnable:         false,
 		UseBackgroundColors: false,
 		Color:               nil,
+		Output:              os.Stderr,
+		Threaded:            false,
 	})
 
-	return func(message ...any) {
-		logger.write(message...)
-	}, logger
+	return logFunc(logger)
 }
 
 func new(namespace string) *Logger {
 	return &Logger{namespace: namespace, lastLog: time.Now(), forced: false, output: os.Stderr}
+}
+
+var logFunc = func(logger *Logger) func(message ...any) {
+	return func(message ...any) {
+		logger.write(message...)
+	}
 }

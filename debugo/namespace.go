@@ -12,11 +12,6 @@ func SetDebug(namespace string) {
 	debug = namespace
 }
 
-// Enabled will return a boolean value to determine if an instance would log according to the current set debug namespace
-func (l *Logger) Enabled() bool {
-	return l.matchNamespace()
-}
-
 func (l *Logger) matchNamespace() bool {
 	if l.forced || debug == "*" {
 		return true
