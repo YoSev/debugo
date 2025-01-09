@@ -12,6 +12,11 @@ func (l *Logger) write(message ...any) {
 			stringMessages[i] = fmt.Sprintf("%v", formatValue(v))
 		}
 
-		fmt.Fprintf(l.output, "%s %s %s\n", l.color.Sprint(l.namespace), noColor.Sprint(strings.Join(stringMessages, " ")), l.color.Sprintf("+%s", prettyPrintDuration(l.elapsed())))
+		log := fmt.Sprintf("%s %s %s\n", l.color.Sprint(l.namespace), noColor.Sprint(strings.Join(stringMessages, " ")), l.color.Sprintf("+%s", prettyPrintDuration(l.elapsed())))
+		if l.channel != nil {
+			l.channel <- log
+		} else {
+			fmt.Fprintf(l.output, "%s", log)
+		}
 	}
 }

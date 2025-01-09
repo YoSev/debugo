@@ -26,9 +26,9 @@ func prettyPrintDuration(d time.Duration) string {
 	if seconds > 0 || minutes > 0 || hours > 0 {
 		result += fmt.Sprintf("%ds", seconds)
 	}
-	if milliseconds != 0 {
-		result += fmt.Sprintf("%dms", milliseconds)
-	}
+
+	result += fmt.Sprintf("%dms", milliseconds) // Always include milliseconds
+
 	return result
 }
 

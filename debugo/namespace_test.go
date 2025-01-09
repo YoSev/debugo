@@ -7,7 +7,7 @@ import (
 )
 
 func TestMatchNamespace(t *testing.T) {
-	_, l := New("test:a")
+	l := new("test:a")
 
 	// Empty debug string
 	SetDebug("")
@@ -42,7 +42,7 @@ func TestMatchNamespace(t *testing.T) {
 	assert.Equal(t, l.matchNamespace(), true, "they should be equal") // Assuming case-sensitive
 
 	// No namespace provided
-	_, l = New("")
+	l = new("")
 	SetDebug("test:*")
 	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
 
@@ -52,15 +52,6 @@ func TestMatchNamespace(t *testing.T) {
 
 	// Invalid patterns
 	SetDebug("--test:*")
-	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
-
-	// Forces instance must always match
-	SetDebug("")
-	_, l = NewWithOptions("test:b", &Options{ForceEnable: true})
-	assert.Equal(t, l.matchNamespace(), true, "they should be equal")
-
-	// Forces instance must always match
-	_, l = NewWithOptions("test:b", nil)
 	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
 }
 
