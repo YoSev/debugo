@@ -79,7 +79,7 @@ unset DEBUGO
 
 ```go
 type Options struct {
-    // Forces log output independent of given namespace matching (default: false)
+    // Force log output independent of given namespace matching (default: false)
     ForceEnable bool
     // Use background colors over foreground colors (default: false)
     UseBackgroundColors bool
@@ -89,6 +89,8 @@ type Options struct {
     Output *os.File
     // Write log files in their own go routine (maintains order)
     Threaded bool
+    // Enable leading timestamps by adding a time format
+    Timestamp *Timestamp
 }
 ```
 
@@ -114,6 +116,7 @@ func main() {
         Color:               color.New(color.FgRed).Add(color.Underline),
         Output:              os.Stdout,
         Threaded:            true,
+        Timestamp:           &debugo.Timestamp{Format: time.Kitchen},,
     }
 
     debug, _ := debugo.NewWithOptions("myapp", options)

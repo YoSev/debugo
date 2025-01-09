@@ -14,20 +14,27 @@ type Logger struct {
 	forced    bool
 	output    *os.File
 	channel   chan string
+	timestamp *Timestamp
+}
+
+type Timestamp struct {
+	Format string
 }
 
 // Options overwrites debugs default values
 type Options struct {
-	// Forces log output independent of given namespace matching (default: false)
+	// Force log output independent of given namespace matching (default: false)
 	ForceEnable bool
-	// Defines to use background colors over foreground colors (default: false)
+	// Use background colors over foreground colors (default: false)
 	UseBackgroundColors bool
-	// Defines a strict color (github.com/fatih/color) (default: random foreground color)
+	// Use a static color (github.com/fatih/color) (default: random foreground color)
 	Color *color.Color
 	// Defines the pipe to output to, eg. stdOut (default: stdErr)
 	Output *os.File
 	// Write log files in their own go routine (maintains order)
 	Threaded bool
+	// Enable leading timestamps by adding a time format
+	Timestamp *Timestamp
 }
 
 // Returns a log-function and an instance of Logger configured using options
@@ -46,6 +53,7 @@ func New(namespace string) (func(message ...any), *Logger) {
 		Color:               nil,
 		Output:              os.Stderr,
 		Threaded:            false,
+		Timestamp:           nil,
 	})
 
 	return logFunc(logger)
