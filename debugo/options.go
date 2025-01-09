@@ -15,6 +15,9 @@ func (l *Logger) applyOptions(options *Options) {
 			l.channel = make(chan string)
 			go l.listen()
 		}
+		if options.Timestamp != nil {
+			l.timestamp = options.Timestamp
+		}
 	}
 
 	if l.color == nil {
