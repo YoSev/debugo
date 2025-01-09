@@ -1,16 +1,9 @@
 package debugo
 
 import (
-	"os"
 	"regexp"
 	"strings"
 )
-
-var debug = os.Getenv("DEBUGO")
-
-func SetDebug(namespace string) {
-	debug = namespace
-}
 
 func (l *Logger) matchNamespace() bool {
 	if l.forced || debug == "*" {
