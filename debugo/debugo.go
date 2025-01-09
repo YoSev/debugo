@@ -31,14 +31,14 @@ type Options struct {
 }
 
 // Returns a log-function and an instance of Logger configured using options
-func NewWithOptions(namespace string, options *Options) func(message ...any) {
+func NewWithOptions(namespace string, options *Options) (func(message ...any), *Logger) {
 	logger := new(namespace)
 	logger.applyOptions(options)
 	return logFunc(logger)
 }
 
 // Returns a log-function and an instance of Logger configured with default values
-func New(namespace string) func(message ...any) {
+func New(namespace string) (func(message ...any), *Logger) {
 	logger := new(namespace)
 	logger.applyOptions(&Options{
 		ForceEnable:         false,
@@ -55,8 +55,8 @@ func new(namespace string) *Logger {
 	return &Logger{namespace: namespace, lastLog: time.Now(), forced: false, output: os.Stderr}
 }
 
-var logFunc = func(logger *Logger) func(message ...any) {
+var logFunc = func(logger *Logger) (func(message ...any), *Logger) {
 	return func(message ...any) {
 		logger.write(message...)
-	}
+	}, logger
 }
