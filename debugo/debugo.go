@@ -7,6 +7,8 @@ import (
 	"github.com/fatih/color"
 )
 
+var debug = os.Getenv("DEBUGO")
+
 type Logger struct {
 	namespace string
 	color     *color.Color
@@ -57,6 +59,16 @@ func New(namespace string) (func(message ...any), *Logger) {
 	})
 
 	return logFunc(logger)
+}
+
+// Programatically set the namespace(s) to debug during runtime
+func SetDebug(namespace string) {
+	debug = namespace
+}
+
+// Check if instance would match the currently active debug namespace(s)
+func (l *Logger) Enabled() bool {
+	return l.matchNamespace()
 }
 
 func new(namespace string) *Logger {

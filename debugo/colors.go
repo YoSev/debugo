@@ -16,7 +16,6 @@ var fgColors = []color.Attribute{
 	color.FgBlue,
 	color.FgMagenta,
 	color.FgCyan,
-	color.FgWhite,
 
 	color.FgHiBlack,
 	color.FgHiRed,
