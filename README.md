@@ -71,6 +71,57 @@ To turn off debugging, unset the `DEBUGO` environment variable:
 unset DEBUGO
 ```
 
+## Configuration
+
+`debugo` allows you to customize its behavior through the `Options` struct. These options let you fine-tune how logs are output and processed.
+
+### Available Options
+
+```go
+type Options struct {
+    // Forces log output independent of given namespace matching (default: false)
+    ForceEnable bool
+    // Use background colors over foreground colors (default: false)
+    UseBackgroundColors bool
+    // Use a static color (github.com/fatih/color) (default: random foreground color)
+    Color *color.Color
+    // Defines the pipe to output to, eg. stdOut (default: stdErr)
+    Output *os.File
+    // Write log files in their own go routine (maintains order)
+    Threaded bool
+}
+```
+
+### Using Options
+
+To create a new logger with specific options, use the `NewWithOptions` function:
+
+#### Example
+
+```go
+package main
+
+import (
+    "github.com/yourusername/debugo"
+    "github.com/fatih/color"
+    "os"
+)
+
+func main() {
+    options := &debugo.Options{
+        ForceEnable:         true,
+        UseBackgroundColors: false,
+        Color:               color.New(color.FgRed).Add(color.Underline),
+        Output:              os.Stdout,
+        Threaded:            true,
+    }
+
+    debug, _ := debugo.NewWithOptions("myapp", options)
+
+    debug("This is a custom debug message with configured options.")
+}
+```
+
 ## Comparison to `debug-js`
 
 While `debugo` is inspired by `debug-js`, it is a simplified version tailored for Go. It does not implement all features of `debug-js`, focusing on core debugging functionality for Go developers.
