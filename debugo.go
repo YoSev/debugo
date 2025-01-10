@@ -8,6 +8,7 @@ import (
 )
 
 var debug = os.Getenv("DEBUGO")
+var globalTimestamp *Timestamp = nil
 
 type Debugger struct {
 	namespace string
@@ -65,6 +66,11 @@ func New(namespace string) *Debugger {
 // Programatically set the namespace(s) to debug during runtime
 func SetDebug(namespace string) {
 	debug = namespace
+}
+
+// Set global timestamp (nil to disable)
+func SetTimestamp(timestamp *Timestamp) {
+	globalTimestamp = timestamp
 }
 
 // Check if instance would match the currently active debug namespace(s)
