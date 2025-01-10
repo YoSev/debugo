@@ -28,7 +28,7 @@ Using `debugo` is straightforward. Here's a basic example:
 package main
 
 import (
-	"github.com/yosev/debugo/debugo"
+	"github.com/yosev/debugo"
 )
 
 func main() {
@@ -104,7 +104,7 @@ To create a new logger with specific options, use the `NewWithOptions` function:
 package main
 
 import (
-    "github.com/yourusername/debugo"
+    "github.com/yosev/debugo"
     "github.com/fatih/color"
     "os"
 )
