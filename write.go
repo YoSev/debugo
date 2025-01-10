@@ -6,7 +6,15 @@ import (
 	"time"
 )
 
-func (l *Logger) write(message ...any) {
+func (l *Debugger) Debug(message ...any) {
+	l.write(message...)
+}
+
+func (l *Debugger) Debugf(format string, message ...any) {
+	l.write(fmt.Sprintf(format, message...))
+}
+
+func (l *Debugger) write(message ...any) {
 	if l.matchNamespace() {
 		stringMessages := make([]string, len(message))
 		for i, v := range message {

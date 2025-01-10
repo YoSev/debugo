@@ -1,6 +1,6 @@
 package debugo
 
-func (l *Logger) applyOptions(options *Options) {
+func (l *Debugger) applyOptions(options *Options) {
 	if options != nil {
 		if options.ForceEnable {
 			l.forced = true

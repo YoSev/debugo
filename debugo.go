@@ -9,7 +9,7 @@ import (
 
 var debug = os.Getenv("DEBUGO")
 
-type Logger struct {
+type Debugger struct {
 	namespace string
 	color     *color.Color
 	lastLog   time.Time
@@ -39,15 +39,15 @@ type Options struct {
 	Timestamp *Timestamp
 }
 
-// Returns a log-function and an instance of Logger configured using options
-func NewWithOptions(namespace string, options *Options) (func(message ...any), *Logger) {
+// Returns an instance of Debugger configured using options
+func NewWithOptions(namespace string, options *Options) *Debugger {
 	logger := new(namespace)
 	logger.applyOptions(options)
-	return logFunc(logger)
+	return logger
 }
 
-// Returns a log-function and an instance of Logger configured with default values
-func New(namespace string) (func(message ...any), *Logger) {
+// Returns an instance of Debugger configured with default values
+func New(namespace string) *Debugger {
 	logger := new(namespace)
 	logger.applyOptions(&Options{
 		ForceEnable:         false,
@@ -58,7 +58,7 @@ func New(namespace string) (func(message ...any), *Logger) {
 		Timestamp:           nil,
 	})
 
-	return logFunc(logger)
+	return logger
 }
 
 // Programatically set the namespace(s) to debug during runtime
@@ -67,16 +67,10 @@ func SetDebug(namespace string) {
 }
 
 // Check if instance would match the currently active debug namespace(s)
-func (l *Logger) Enabled() bool {
+func (l *Debugger) Enabled() bool {
 	return l.matchNamespace()
 }
 
-func new(namespace string) *Logger {
-	return &Logger{namespace: namespace, lastLog: time.Now(), forced: false, output: os.Stderr}
-}
-
-var logFunc = func(logger *Logger) (func(message ...any), *Logger) {
-	return func(message ...any) {
-		logger.write(message...)
-	}, logger
+func new(namespace string) *Debugger {
+	return &Debugger{namespace: namespace, lastLog: time.Now(), forced: false, output: os.Stderr}
 }

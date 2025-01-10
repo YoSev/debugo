@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func (l *Logger) listen() {
+func (l *Debugger) listen() {
 	for {
 		select {
 		case log := <-l.channel:

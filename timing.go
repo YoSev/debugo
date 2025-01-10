@@ -2,7 +2,7 @@ package debugo
 
 import "time"
 
-func (l *Logger) elapsed() time.Duration {
+func (l *Debugger) elapsed() time.Duration {
 	currentTime := time.Now()
 	defer func() { l.lastLog = currentTime }()
 

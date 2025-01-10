@@ -53,7 +53,7 @@ var fgColorMap = make(map[string]*color.Color)
 // cache fgColors by namespace
 var bgColorMap = make(map[string]*color.Color)
 
-func (l *Logger) setRandomColor(useBg bool) {
+func (l *Debugger) setRandomColor(useBg bool) {
 	rand.Seed(uint64(time.Now().UnixNano()))
 
 	if useBg {

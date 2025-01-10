@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func (l *Logger) matchNamespace() bool {
+func (l *Debugger) matchNamespace() bool {
 	if l.forced || debug == "*" {
 		return true
 	}
