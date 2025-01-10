@@ -33,9 +33,15 @@ import (
 
 func main() {
 	debugo.SetDebug("*") // overwrites DEBUGO env
-	debug, _ := debugo.New("my:namespace")
+	debug := debugo.New("my:namespace")
 
-	debug("This is a debug message.", 420.69, true, struct {
+    // debug (using fmt.Sprint)
+	debug.Debug("This is a debug message.", 420.69, true, struct {
+		Foo string
+	}{Foo: "bar"})
+
+    // debug formated (using fmt.Sprintf)
+    debug.Debugf("This is a debug message %d %v %v", 420.69, true, struct {
 		Foo string
 	}{Foo: "bar"})
 }
@@ -119,10 +125,28 @@ func main() {
         Timestamp:           &debugo.Timestamp{Format: time.Kitchen},,
     }
 
-    debug, _ := debugo.NewWithOptions("myapp", options)
+    debug := debugo.NewWithOptions("myapp", options)
 
-    debug("This is a custom debug message with configured options.")
+    debug.Debug("This is a custom debug message with configured options.")
 }
+```
+
+### Extend
+
+You can simply extend debugger
+
+```go
+debugSign := debugo.New("sign")
+
+// clones into a new debug instance with extended namespace
+debugSignIn := debugSign.Extend("in")
+debugSignUp := debugSign.Extend("up")
+debugSignOut := debugSign.Extend("out")
+
+debugSign.Debug("hello"); // sign hello
+debugSignIn.Debug("hello"); // sign:in hello
+debugSignUp.Debug("hello"); // sign:up hello
+debugSignOut.Debug("hello"); // sign:out hello
 ```
 
 ## Comparison to `debug-js`
