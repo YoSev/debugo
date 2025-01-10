@@ -17,6 +17,7 @@ type Debugger struct {
 	output    *os.File
 	channel   chan string
 	timestamp *Timestamp
+	options   *Options
 }
 
 type Timestamp struct {
@@ -41,15 +42,14 @@ type Options struct {
 
 // Returns an instance of Debugger configured using options
 func NewWithOptions(namespace string, options *Options) *Debugger {
-	logger := new(namespace)
-	logger.applyOptions(options)
+	logger := new(namespace, options)
+	logger.applyOptions()
 	return logger
 }
 
 // Returns an instance of Debugger configured with default values
 func New(namespace string) *Debugger {
-	logger := new(namespace)
-	logger.applyOptions(&Options{
+	logger := new(namespace, &Options{
 		ForceEnable:         false,
 		UseBackgroundColors: false,
 		Color:               nil,
@@ -57,6 +57,7 @@ func New(namespace string) *Debugger {
 		Threaded:            false,
 		Timestamp:           nil,
 	})
+	logger.applyOptions()
 
 	return logger
 }
@@ -71,6 +72,6 @@ func (l *Debugger) Enabled() bool {
 	return l.matchNamespace()
 }
 
-func new(namespace string) *Debugger {
-	return &Debugger{namespace: namespace, lastLog: time.Now(), forced: false, output: os.Stderr}
+func new(namespace string, options *Options) *Debugger {
+	return &Debugger{namespace: namespace, lastLog: time.Now(), forced: false, output: os.Stderr, options: options}
 }
