@@ -22,9 +22,12 @@ func (l *Debugger) write(message ...any) {
 		}
 
 		timestamp := ""
-		if l.timestamp != nil {
+		if globalTimestamp != nil {
+			timestamp = time.Now().Format(l.timestamp.Format) + " "
+		} else if l.timestamp != nil {
 			timestamp = time.Now().Format(l.timestamp.Format) + " "
 		}
+
 		log := fmt.Sprintf("%s %s %s\n", l.color.Sprintf("%s%s", timestamp, l.namespace), noColor.Sprint(strings.Join(stringMessages, " ")), l.color.Sprintf("+%s", prettyPrintDuration(l.elapsed())))
 		if l.channel != nil {
 			l.channel <- log
