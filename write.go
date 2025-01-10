@@ -23,7 +23,7 @@ func (l *Debugger) write(message ...any) {
 
 		timestamp := ""
 		if globalTimestamp != nil {
-			timestamp = time.Now().Format(l.timestamp.Format) + " "
+			timestamp = time.Now().Format(globalTimestamp.Format) + " "
 		} else if l.timestamp != nil {
 			timestamp = time.Now().Format(l.timestamp.Format) + " "
 		}
