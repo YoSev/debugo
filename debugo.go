@@ -68,6 +68,11 @@ func SetDebug(namespace string) {
 	debug = namespace
 }
 
+// Get the namespace(s) active for debug
+func GetDebug() string {
+	return debug
+}
+
 // Set global timestamp (nil to disable)
 func SetTimestamp(timestamp *Timestamp) {
 	globalTimestamp = timestamp
