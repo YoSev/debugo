@@ -28,7 +28,11 @@ func (l *Debugger) write(message ...any) {
 		if l.channel != nil {
 			l.channel <- log
 		} else {
-			fmt.Fprintf(l.output, "%s", log)
+			if l.output == nil {
+				fmt.Fprintf(output, "%s", log)
+			} else {
+				fmt.Fprintf(l.output, "%s", log)
+			}
 		}
 	}
 }

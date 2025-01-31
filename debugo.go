@@ -1,6 +1,7 @@
 package debugo
 
 import (
+	"io"
 	"os"
 	"time"
 
@@ -8,6 +9,7 @@ import (
 )
 
 var debug = os.Getenv("DEBUGO")
+var output io.Writer = os.Stderr
 var globalTimestamp *Timestamp = nil
 
 type Debugger struct {
@@ -15,7 +17,7 @@ type Debugger struct {
 	color     *color.Color
 	lastLog   time.Time
 	forced    bool
-	output    *os.File
+	output    io.Writer
 	channel   chan string
 	timestamp *Timestamp
 	options   *Options
@@ -34,7 +36,7 @@ type Options struct {
 	// Use a static color (github.com/fatih/color) (default: random foreground color)
 	Color *color.Color
 	// Defines the pipe to output to, eg. stdOut (default: stdErr)
-	Output *os.File
+	Output io.Writer
 	// Write log files in their own go routine (maintains order)
 	Threaded bool
 	// Enable leading timestamps by adding a time format
@@ -54,7 +56,7 @@ func New(namespace string) *Debugger {
 		ForceEnable:         false,
 		UseBackgroundColors: false,
 		Color:               nil,
-		Output:              os.Stderr,
+		Output:              nil,
 		Threaded:            false,
 		Timestamp:           nil,
 	})
@@ -63,7 +65,7 @@ func New(namespace string) *Debugger {
 	return logger
 }
 
-// Programatically set the namespace(s) to debug during runtime
+// Programmatically set the namespace(s) to debug during runtime
 func SetDebug(namespace string) {
 	debug = namespace
 }
@@ -71,6 +73,16 @@ func SetDebug(namespace string) {
 // Get the namespace(s) active for debug
 func GetDebug() string {
 	return debug
+}
+
+// Set the output writer
+func SetOutput(w io.Writer) {
+	output = w
+}
+
+// Get the output writer
+func GetOutput() io.Writer {
+	return output
 }
 
 // Set global timestamp (nil to disable)
@@ -84,5 +96,5 @@ func (l *Debugger) Enabled() bool {
 }
 
 func new(namespace string, options *Options) *Debugger {
-	return &Debugger{namespace: namespace, lastLog: time.Now(), forced: false, output: os.Stderr, options: options}
+	return &Debugger{namespace: namespace, lastLog: time.Now(), forced: false, output: nil, options: options}
 }

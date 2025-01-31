@@ -8,7 +8,11 @@ func (l *Debugger) listen() {
 	for {
 		select {
 		case log := <-l.channel:
-			fmt.Fprintf(l.output, "%s", log)
+			if l.output != nil {
+				fmt.Fprintf(l.output, "%s", log)
+			} else {
+				fmt.Fprintf(output, "%s", log)
+			}
 		}
 	}
 }
