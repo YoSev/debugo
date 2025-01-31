@@ -10,6 +10,7 @@ import (
 
 var debug = os.Getenv("DEBUGO")
 var output io.Writer = os.Stderr
+var noColors bool = false
 var globalTimestamp *Timestamp = nil
 
 type Debugger struct {
@@ -83,6 +84,11 @@ func SetOutput(w io.Writer) {
 // Get the output writer
 func GetOutput() io.Writer {
 	return output
+}
+
+// Disable all colors
+func DisableColors(b bool) {
+	noColors = b
 }
 
 // Set global timestamp (nil to disable)
