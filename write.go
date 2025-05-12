@@ -2,8 +2,11 @@ package debugo
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
+
+var mutex = &sync.Mutex{}
 
 func (l *Debugger) Debug(message ...any) {
 	l.write(message...)
@@ -14,6 +17,8 @@ func (l *Debugger) Debugf(format string, message ...any) {
 }
 
 func (l *Debugger) write(message ...any) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
 	if l.matchNamespace() {
 		msg := fmt.Sprint(message...)
 
@@ -33,6 +38,8 @@ func (l *Debugger) write(message ...any) {
 		if l.channel != nil {
 			l.channel <- log
 		} else {
+			mutex.Lock()
+			defer mutex.Unlock()
 			if l.output == nil {
 				fmt.Fprintf(output, "%s", log)
 			} else {
