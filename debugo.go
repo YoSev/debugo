@@ -3,6 +3,7 @@ package debugo
 import (
 	"io"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/fatih/color"
@@ -10,6 +11,7 @@ import (
 
 var debug = os.Getenv("DEBUGO")
 var output io.Writer = os.Stderr
+var outputMutex = &sync.Mutex{}
 var noColors bool = false
 var globalTimestamp *Timestamp = nil
 
@@ -22,6 +24,8 @@ type Debugger struct {
 	channel   chan string
 	timestamp *Timestamp
 	options   *Options
+
+	mutex *sync.Mutex
 }
 
 type Timestamp struct {
@@ -78,11 +82,15 @@ func GetDebug() string {
 
 // Set the output writer
 func SetOutput(w io.Writer) {
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	output = w
 }
 
 // Get the output writer
 func GetOutput() io.Writer {
+	outputMutex.Lock()
+	defer outputMutex.Unlock()
 	return output
 }
 
@@ -102,5 +110,5 @@ func (l *Debugger) Enabled() bool {
 }
 
 func new(namespace string, options *Options) *Debugger {
-	return &Debugger{namespace: namespace, lastLog: time.Now(), forced: false, output: nil, options: options}
+	return &Debugger{namespace: namespace, lastLog: time.Now(), forced: false, output: nil, options: options, mutex: &sync.Mutex{}}
 }
