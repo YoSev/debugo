@@ -14,6 +14,8 @@ func (l *Debugger) Debugf(format string, message ...any) {
 }
 
 func (l *Debugger) write(message ...any) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
 	if l.matchNamespace() {
 		msg := fmt.Sprint(message...)
 
