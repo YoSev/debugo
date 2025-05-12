@@ -3,6 +3,7 @@ package debugo
 import (
 	"io"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/fatih/color"
@@ -22,6 +23,8 @@ type Debugger struct {
 	channel   chan string
 	timestamp *Timestamp
 	options   *Options
+
+	mutex *sync.Mutex
 }
 
 type Timestamp struct {
@@ -102,5 +105,5 @@ func (l *Debugger) Enabled() bool {
 }
 
 func new(namespace string, options *Options) *Debugger {
-	return &Debugger{namespace: namespace, lastLog: time.Now(), forced: false, output: nil, options: options}
+	return &Debugger{namespace: namespace, lastLog: time.Now(), forced: false, output: nil, options: options, mutex: &sync.Mutex{}}
 }
