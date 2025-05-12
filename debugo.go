@@ -3,6 +3,7 @@ package debugo
 import (
 	"io"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/fatih/color"
@@ -10,6 +11,7 @@ import (
 
 var debug = os.Getenv("DEBUGO")
 var output io.Writer = os.Stderr
+var outputMutex = &sync.Mutex{}
 var noColors bool = false
 var globalTimestamp *Timestamp = nil
 
