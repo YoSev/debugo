@@ -2,8 +2,6 @@ package debugo
 
 import (
 	"fmt"
-	"reflect"
-	"strings"
 	"time"
 )
 
@@ -30,27 +28,4 @@ func prettyPrintDuration(d time.Duration) string {
 	result += fmt.Sprintf("%dms", milliseconds) // Always include milliseconds
 
 	return result
-}
-
-func formatValue(v any) string {
-	switch v := v.(type) {
-	case fmt.Stringer:
-		return v.String()
-	default:
-		rv := reflect.ValueOf(v)
-		rt := reflect.TypeOf(v)
-
-		if rv.Kind() == reflect.Struct {
-			var fields []string
-			for i := 0; i < rv.NumField(); i++ {
-				field := rt.Field(i)
-				value := rv.Field(i)
-				fields = append(fields, fmt.Sprintf("%s: %v", field.Name, value.Interface()))
-			}
-			return fmt.Sprintf("{%s}", strings.Join(fields, ", "))
-		}
-
-		// Fallback for all other types
-		return fmt.Sprintf("%v", v)
-	}
 }

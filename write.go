@@ -5,42 +5,35 @@ import (
 	"time"
 )
 
-func (l *Debugger) Debug(message ...any) {
-	l.write(message...)
+func (d *Debugger) Debug(message ...any) {
+	d.write(message...)
 }
 
-func (l *Debugger) Debugf(format string, message ...any) {
-	l.write(fmt.Sprintf(format, message...))
+func (d *Debugger) Debugf(format string, message ...any) {
+	d.write(fmt.Sprintf(format, message...))
 }
 
-func (l *Debugger) write(message ...any) {
-	l.mutex.Lock()
-	defer l.mutex.Unlock()
-	if l.matchNamespace() {
+func (d *Debugger) write(message ...any) {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+
+	if d.matchNamespace() {
 		msg := fmt.Sprint(message...)
 
-		timestamp := ""
-		if globalTimestamp != nil {
-			timestamp = time.Now().Format(globalTimestamp.Format) + " "
-		} else if l.timestamp != nil {
-			timestamp = time.Now().Format(l.timestamp.Format) + " "
+		t := GetTimestamp()
+		var timestamp string
+		if t != nil {
+			timestamp = time.Now().Format(GetTimestamp().Format)
 		}
 
-		var log string
-		if !noColors {
-			log = fmt.Sprintf("%s %s %s\n", l.color.Sprintf("%s%s", timestamp, l.namespace), noColor.Sprint(msg), l.color.Sprintf("+%s", prettyPrintDuration(l.elapsed())))
+		log := fmt.Sprintf("%s %s %s %s\n", timestamp, d.color.Sprintf("%s", d.namespace), msg, d.color.Sprintf("+%s", prettyPrintDuration(d.elapsed())))
+
+		if d.output != nil {
+			fmt.Fprintf(d.output, "%s", log)
 		} else {
-			log = fmt.Sprintf("%s %s %s\n", fmt.Sprintf("%s%s", timestamp, l.namespace), fmt.Sprint(msg), fmt.Sprintf("+%s", prettyPrintDuration(l.elapsed())))
-		}
-		if l.channel != nil {
-			l.channel <- log
-		} else {
-			if l.output == nil {
-				outputMutex.Lock()
-				defer outputMutex.Unlock()
-				fmt.Fprintf(output, "%s", log)
-			} else {
-				fmt.Fprintf(l.output, "%s", log)
+			o := GetOutput()
+			if o != nil {
+				fmt.Fprintf(o, "%s", log)
 			}
 		}
 	}
