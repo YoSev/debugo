@@ -1,4 +1,4 @@
-package debugo
+package debug
 
 import (
 	"testing"
@@ -10,48 +10,48 @@ func TestMatchNamespace(t *testing.T) {
 	l := New("test:a")
 
 	// Empty debug string
-	SetDebug("")
+	SetNamespace("")
 	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
 
 	// Single wildcard
-	SetDebug("*")
+	SetNamespace("*")
 	assert.Equal(t, l.matchNamespace(), true, "they should be equal")
 
 	// Single negative pattern
-	SetDebug("-test:*")
+	SetNamespace("-test:*")
 	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
 
 	// Multiple negative patterns
-	SetDebug("-test:a,-test:b")
+	SetNamespace("-test:a,-test:b")
 	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
 
 	// Leading/trailing spaces in debug string
-	SetDebug("   test:a   ")
+	SetNamespace("   test:a   ")
 	assert.Equal(t, l.matchNamespace(), true, "they should be equal")
 
 	// Overlapping inclusion and exclusion
-	SetDebug("test:*, -test:a")
+	SetNamespace("test:*, -test:a")
 	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
 
 	// Exact match
-	SetDebug("test:a")
+	SetNamespace("test:a")
 	assert.Equal(t, l.matchNamespace(), true, "they should be equal")
 
 	// Case sensitivity
-	SetDebug("TEST:A")
+	SetNamespace("TEST:A")
 	assert.Equal(t, l.matchNamespace(), true, "they should be equal") // Assuming case-sensitive
 
 	// No namespace provided
 	l = New("")
-	SetDebug("test:*")
+	SetNamespace("test:*")
 	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
 
 	// Non-matching wildcards
-	SetDebug("test:x*")
+	SetNamespace("test:x*")
 	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
 
 	// Invalid patterns
-	SetDebug("--test:*")
+	SetNamespace("--test:*")
 	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
 }
 
