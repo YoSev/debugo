@@ -1,4 +1,4 @@
-module github.com/yosev/debugo
+module github.com/yosev/debug
 
 go 1.23.4
 
