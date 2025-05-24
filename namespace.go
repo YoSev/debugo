@@ -5,12 +5,13 @@ import (
 	"strings"
 )
 
-func (l *Debugger) matchNamespace() bool {
-	if l.forced || debug == "*" {
+func (d *Debugger) matchNamespace() bool {
+	namespace := GetNamespace()
+	if namespace == "*" {
 		return true
 	}
 
-	debugList := strings.Split(debug, ",")
+	debugList := strings.Split(namespace, ",")
 
 	// Separate the exclusion and inclusion patterns
 	var exclusionPatterns []string
@@ -27,14 +28,14 @@ func (l *Debugger) matchNamespace() bool {
 
 	// Check if any exclusion pattern matches the namespace
 	for _, exclusionPattern := range exclusionPatterns {
-		if matchPattern(l.namespace, exclusionPattern) {
+		if matchPattern(d.namespace, exclusionPattern) {
 			return false // If an exclusion matches, return false immediately
 		}
 	}
 
 	// Check if any inclusion pattern matches the namespace
 	for _, inclusionPattern := range inclusionPatterns {
-		if matchPattern(l.namespace, inclusionPattern) {
+		if matchPattern(d.namespace, inclusionPattern) {
 			return true // If an inclusion matches, return true
 		}
 	}
