@@ -23,7 +23,7 @@ func (d *Debugger) write(message ...any) {
 		t := GetTimestamp()
 		var timestamp string
 		if t != nil {
-			timestamp = time.Now().Format(GetTimestamp().Format)
+			timestamp = time.Now().Format(t.Format)
 		}
 
 		log := fmt.Sprintf("%s %s %s %s\n", timestamp, d.color.Sprintf("%s", d.namespace), msg, d.color.Sprintf("+%s", prettyPrintDuration(d.elapsed())))

@@ -25,14 +25,14 @@ type Debugger struct {
 }
 
 func New(namespace string) *Debugger {
-	return new(namespace)
+	return newDebugger(namespace)
 }
 
 func (d *Debugger) Extend(namespace string) *Debugger {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 
-	n := new(d.namespace + ":" + namespace)
+	n := newDebugger(d.namespace + ":" + namespace)
 	n.color = d.color
 	n.lastLog = d.lastLog
 	n.output = d.output
@@ -51,7 +51,7 @@ func (d *Debugger) SetOutput(output io.Writer) {
 	d.output = output
 }
 
-func new(namespace string) *Debugger {
+func newDebugger(namespace string) *Debugger {
 	return &Debugger{
 		namespace: namespace,
 
