@@ -53,6 +53,23 @@ func TestMatchNamespace(t *testing.T) {
 	// Invalid patterns
 	SetNamespace("--test:*")
 	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+
+	// --- Optional pattern tests ---
+	l = New("info")
+	SetNamespace("info:?")
+	assert.Equal(t, l.matchNamespace(), true, "should match the base namespace")
+
+	l = New("info:test")
+	SetNamespace("info:?")
+	assert.Equal(t, l.matchNamespace(), true, "should match the namespace with suffix")
+
+	l = New("info:test:sub")
+	SetNamespace("info:?")
+	assert.Equal(t, l.matchNamespace(), true, "should match namespace with deeper suffix")
+
+	l = New("other")
+	SetNamespace("info:?")
+	assert.Equal(t, l.matchNamespace(), false, "should not match unrelated namespace")
 }
 
 func TestMatchPattern(t *testing.T) {
@@ -89,6 +106,12 @@ func TestMatchPattern(t *testing.T) {
 		{"test:abc", "test:*:*", false},   // Matches with `test:*:*`
 		{"test:abc", "test:abc:*", false}, // Matches with `test:abc:*`
 		{"test:abc", "test:*:abc", false}, // Doesn't match "test:abc" with "test:*:abc"
+
+		// --- Optional pattern tests ---
+		{"info", "info:?", true},          // exact base match
+		{"info:test", "info:?", true},     // base with suffix
+		{"info:test:sub", "info:?", true}, // deeper suffix
+		{"other", "info:?", false},        // non-matching
 	}
 
 	for _, tt := range tests {
