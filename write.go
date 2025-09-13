@@ -5,12 +5,14 @@ import (
 	"time"
 )
 
-func (d *Debugger) Debug(message ...any) {
+func (d *Debugger) Debug(message ...any) *Debugger {
 	d.write(message...)
+	return d
 }
 
-func (d *Debugger) Debugf(format string, message ...any) {
+func (d *Debugger) Debugf(format string, message ...any) *Debugger {
 	d.write(fmt.Sprintf(format, message...))
+	return d
 }
 
 func (d *Debugger) write(message ...any) {
@@ -19,6 +21,10 @@ func (d *Debugger) write(message ...any) {
 
 	if d.matchNamespace() {
 		msg := fmt.Sprint(message...)
+
+		if msg == "" {
+			return
+		}
 
 		t := GetTimestamp()
 		var timestamp string
