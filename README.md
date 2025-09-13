@@ -15,7 +15,7 @@ A lightweight, colorful, and flexible debugging utility for Go — inspired by [
 - ✅ Namespaced debug logs (`namespace:subspace`)
 - 🎨 Automatic and consistent color assignment per namespace
 - 🕒 Time elapsed since last log (e.g., `+3ms`)
-- 🧪 Wildcard-based inclusion/exclusion filtering (`*`, `-namespace:*`)
+- 🧪 Wildcard-based inclusion/exclusion filtering (`*`, '?', `-namespace:*`)
 - 🔐 Thread-safe logging with `sync.RWMutex`
 - 🧰 Custom timestamp format and output writer support
 
@@ -62,17 +62,17 @@ func main() {
 
 ### Logger Creation
 
-| Function           | Description                                |
-|--------------------|--------------------------------------------|
-| `New(name string)` | Creates a new debugger for the namespace   |
-| `Extend(name string)` | Creates a sub-namespace logger         |
+| Function              | Description                              |
+| --------------------- | ---------------------------------------- |
+| `New(name string)`    | Creates a new debugger for the namespace |
+| `Extend(name string)` | Creates a sub-namespace logger           |
 
 ### Logging Methods
 
-| Method               | Description                       |
-|----------------------|-----------------------------------|
-| `Debug(args ...any)` | Print values to the output stream |
-| `Debugf(format, ...)`| Formatted output like `fmt.Printf`|
+| Method                | Description                        |
+| --------------------- | ---------------------------------- |
+| `Debug(args ...any)`  | Print values to the output stream  |
+| `Debugf(format, ...)` | Formatted output like `fmt.Printf` |
 
 ---
 
@@ -82,12 +82,13 @@ func main() {
 
 ```go
 debugo.SetNamespace("*")                      // Enable all namespaces
-debugo.SetNamespace("app:*")                  // Enable only app and submodules
-debugo.SetNamespace("api:*, -api:auth")       // Enable `api:*` except `api:auth`
+debugo.SetNamespace("api:*")                  // Enable 'api' with sub spaces
+debugo.SetNamespace("api:*, -api:auth")       // Enable `api:*` with sub spaces except `api:auth`
+debugo.SetNamespace("api:?") 						      // Enable `api` with optional with sub spaces
 debugo.SetNamespace("")                       // Disable all logging
 ```
 
-Supports wildcards (`*`) and negation (`-`).
+Supports wildcards (`*`), optional sub spcaces (`?`), and negation (`-`).
 
 ### Output Stream
 

@@ -44,6 +44,18 @@ func (d *Debugger) matchNamespace() bool {
 }
 
 func matchPattern(namespace, pattern string) bool {
+	// Handle the "optional" case with ":?"
+	if strings.HasSuffix(pattern, ":?") {
+		base := strings.TrimSuffix(pattern, ":?")
+		// Match exactly the base or the base followed by anything
+		regexPattern := "^" + regexp.QuoteMeta(base) + "(:.*)?$"
+		re, err := regexp.Compile(regexPattern)
+		if err != nil {
+			return false
+		}
+		return re.MatchString(namespace)
+	}
+
 	// Replace '*' with '.*' for regex matching (.* matches any sequence of characters)
 	regexPattern := "^" + strings.ReplaceAll(pattern, "*", ".*") + "$"
 
