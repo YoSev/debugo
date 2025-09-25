@@ -26,22 +26,16 @@ var fgColors = []color.Attribute{
 	color.FgHiWhite,
 }
 
-var (
-	fgColorMap = make(map[string]*color.Color)
-	fgColorMux sync.RWMutex
-)
+var fgColorMap = sync.Map{}
 
 func getRandomColor(namespace string) *color.Color {
-	fgColorMux.Lock()
-	defer fgColorMux.Unlock()
-
-	if c, ok := fgColorMap[namespace]; ok {
-		return c
+	if c, ok := fgColorMap.Load(namespace); ok {
+		return c.(*color.Color)
 	}
 
 	src := rand.NewSource(uint64(time.Now().UnixNano()))
 	r := rand.New(src)
 	c := color.New(fgColors[r.Intn(len(fgColors))])
-	fgColorMap[namespace] = c
+	fgColorMap.Store(namespace, c)
 	return c
 }
