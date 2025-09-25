@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var namespace = "test-namespace"
@@ -28,6 +30,11 @@ func stripANSI(input string) string {
 	return re.ReplaceAllString(input, "")
 }
 
+func hasANSI(input string) bool {
+	re := regexp.MustCompile(`\x1b\[[0-9;]*m`)
+	return re.MatchString(input)
+}
+
 func TestDebug(t *testing.T) {
 	var buf bytes.Buffer
 	d := getDebugger()
@@ -35,11 +42,33 @@ func TestDebug(t *testing.T) {
 
 	d.Debug(testMessage)
 
+	assert.True(t, hasANSI(buf.String()), "Must have no colors")
+
 	output := strings.TrimSpace(stripANSI(buf.String())) // Strip colors and trim whitespace
 	expected := strings.TrimSpace(testMessageExpected)
-	if output != expected {
-		t.Errorf("Expected '%s' in output, got: '%s'", expected, output)
-	}
+	assert.Equal(t, output, expected, "Must have no colors")
+}
+
+func TestDebugNoColors(t *testing.T) {
+	var buf bytes.Buffer
+	SetUseColors(false)
+	d := getDebugger()
+	d.SetOutput(&buf)
+
+	d.Debug(testMessage)
+
+	assert.False(t, hasANSI(buf.String()), "Must have no colors")
+}
+
+func TestDebugWithColors(t *testing.T) {
+	var buf bytes.Buffer
+	SetUseColors(true)
+	d := getDebugger()
+	d.SetOutput(&buf)
+
+	d.Debug(testMessage)
+
+	assert.True(t, hasANSI(buf.String()), "Must have colors")
 }
 
 func TestDebugf(t *testing.T) {

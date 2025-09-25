@@ -12,6 +12,8 @@ type config struct {
 
 	output io.Writer
 
+	useColors bool
+
 	mutex *sync.RWMutex
 }
 
@@ -21,11 +23,29 @@ var runtime = &config{
 
 	output: os.Stderr,
 
+	useColors: true,
+
 	mutex: &sync.RWMutex{},
 }
 
 type Timestamp struct {
 	Format string
+}
+
+// Set the global color usage for debugging.
+func SetUseColors(use bool) {
+	runtime.mutex.Lock()
+	defer runtime.mutex.Unlock()
+
+	runtime.useColors = use
+}
+
+// GetNamespace retrieves the current global color usage for debugging.
+func GetUseColors() bool {
+	runtime.mutex.RLock()
+	defer runtime.mutex.RUnlock()
+
+	return runtime.useColors
 }
 
 // Set the global namespace for debugging.
