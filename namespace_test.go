@@ -33,6 +33,18 @@ func TestMatchNamespace(t *testing.T) {
 	SetNamespace("test:*, -test:a")
 	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
 
+	// Overlapping inclusion and exclusion
+	SetNamespace("*, -test:a")
+	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+
+	// Overlapping inclusion and exclusion
+	SetNamespace("*, -test:?")
+	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+
+	// Overlapping inclusion and exclusion
+	SetNamespace("*, -test:*")
+	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+
 	// Exact match
 	SetNamespace("test:a")
 	assert.Equal(t, l.matchNamespace(), true, "they should be equal")
