@@ -12,7 +12,7 @@ type config struct {
 
 	output io.Writer
 
-	mutex *sync.Mutex
+	mutex *sync.RWMutex
 }
 
 var runtime = &config{
@@ -21,7 +21,7 @@ var runtime = &config{
 
 	output: os.Stderr,
 
-	mutex: &sync.Mutex{},
+	mutex: &sync.RWMutex{},
 }
 
 type Timestamp struct {
@@ -38,8 +38,8 @@ func SetNamespace(namespace string) {
 
 // GetNamespace retrieves the current global namespace for debugging.
 func GetNamespace() string {
-	runtime.mutex.Lock()
-	defer runtime.mutex.Unlock()
+	runtime.mutex.RLock()
+	defer runtime.mutex.RUnlock()
 
 	return runtime.namespace
 }
@@ -54,8 +54,8 @@ func SetTimestamp(timestamp *Timestamp) {
 
 // Retrieves the current global timestamp configuration for debugging.
 func GetTimestamp() *Timestamp {
-	runtime.mutex.Lock()
-	defer runtime.mutex.Unlock()
+	runtime.mutex.RLock()
+	defer runtime.mutex.RUnlock()
 
 	return runtime.timestamp
 }
@@ -70,8 +70,8 @@ func SetOutput(output io.Writer) {
 
 // Retrieves the current global output configuration for debugging.
 func GetOutput() io.Writer {
-	runtime.mutex.Lock()
-	defer runtime.mutex.Unlock()
+	runtime.mutex.RLock()
+	defer runtime.mutex.RUnlock()
 
 	return runtime.output
 }
