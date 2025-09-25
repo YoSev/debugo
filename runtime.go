@@ -16,7 +16,7 @@ type config struct {
 }
 
 var runtime = &config{
-	namespace: "",
+	namespace: "*",
 	timestamp: nil,
 
 	output: os.Stderr,
