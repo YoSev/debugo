@@ -42,27 +42,41 @@ func TestDebug(t *testing.T) {
 
 	d.Debug(testMessage)
 
-	assert.True(t, hasANSI(buf.String()), "Must have no colors")
+	assert.True(t, hasANSI(buf.String()))
 
 	output := strings.TrimSpace(stripANSI(buf.String())) // Strip colors and trim whitespace
 	expected := strings.TrimSpace(testMessageExpected)
-	assert.Equal(t, expected, output, "Must have no colors")
+	assert.Equal(t, expected, output)
 }
 
-func TestDebugWithFields(t *testing.T) {
+func TestDebugJSON(t *testing.T) {
 	var buf bytes.Buffer
 	d := getDebugger()
 	d.SetOutput(&buf)
+	SetFormat(JSON)
+	d.Debug(testMessage)
+	SetFormat(Plain)
 
-	x := d.With("key1", "value1").With("key2", 42)
-
-	x.Debug(testMessage)
-
-	assert.True(t, hasANSI(buf.String()), "Must have no colors")
-
+	assert.False(t, hasANSI(buf.String()))
 	output := strings.TrimSpace(stripANSI(buf.String())) // Strip colors and trim whitespace
-	expected := strings.TrimSpace(fmt.Sprintf("%s key1=value1 key2=42 %s +0ms\n", namespace, testMessage))
-	assert.Equal(t, expected, output, "Must have fields")
+	expected := strings.TrimSpace("{\"namespace\":\"" + namespace + "\",\"message\":\"" + testMessage + "\"}")
+	assert.Equal(t, expected, output)
+}
+
+func TestDebugJSONWithTimestamp(t *testing.T) {
+	var buf bytes.Buffer
+	d := getDebugger()
+	SetOutput(&buf)
+	SetTimestamp(&Timestamp{Format: "2006"})
+	SetFormat(JSON)
+	d.Debug(testMessage)
+	SetFormat(Plain)
+	SetTimestamp(nil)
+
+	assert.False(t, hasANSI(buf.String()))
+	output := strings.TrimSpace(stripANSI(buf.String())) // Strip colors and trim whitespace
+	expected := strings.TrimSpace("{\"timestamp\":\"" + fmt.Sprint(time.Now().Year()) + "\",\"namespace\":\"" + namespace + "\",\"message\":\"" + testMessage + "\"}")
+	assert.Equal(t, expected, output)
 }
 
 func TestDebugGlobalOutput(t *testing.T) {
@@ -74,11 +88,11 @@ func TestDebugGlobalOutput(t *testing.T) {
 
 	d.Debug(testMessage)
 
-	assert.True(t, hasANSI(buf.String()), "Must have no colors")
+	assert.True(t, hasANSI(buf.String()))
 
 	output := strings.TrimSpace(stripANSI(buf.String())) // Strip colors and trim whitespace
 	expected := strings.TrimSpace(testMessageExpected)
-	assert.Equal(t, expected, output, "Must have no colors")
+	assert.Equal(t, expected, output)
 }
 
 func TestDebugNoColors(t *testing.T) {
@@ -89,7 +103,7 @@ func TestDebugNoColors(t *testing.T) {
 
 	d.Debug(testMessage)
 
-	assert.False(t, hasANSI(buf.String()), "Must have no colors")
+	assert.False(t, hasANSI(buf.String()))
 }
 
 func TestDebugNonMatchingNamespace(t *testing.T) {
@@ -100,7 +114,7 @@ func TestDebugNonMatchingNamespace(t *testing.T) {
 
 	d.Debug("")
 
-	assert.Empty(t, buf.String(), "Must have no message")
+	assert.Empty(t, buf.String())
 }
 
 func TestDebugEmptyMessage(t *testing.T) {
@@ -112,7 +126,7 @@ func TestDebugEmptyMessage(t *testing.T) {
 	SetNamespace("does:not:exist")
 	d.Debug("test")
 
-	assert.Empty(t, buf.String(), "Must have no message")
+	assert.Empty(t, buf.String())
 }
 
 func TestDebugWithColors(t *testing.T) {
@@ -123,7 +137,7 @@ func TestDebugWithColors(t *testing.T) {
 
 	d.Debug(testMessage)
 
-	assert.True(t, hasANSI(buf.String()), "Must have colors")
+	assert.True(t, hasANSI(buf.String()))
 }
 
 func TestDebugf(t *testing.T) {
@@ -171,4 +185,39 @@ func TestDebugRaceCondition(_ *testing.T) {
 
 	// Optionally, verify output without colors
 	_ = stripANSI(buf.String())
+}
+
+func TestWriteWithFields(t *testing.T) {
+	var buf bytes.Buffer
+	d := getDebugger().With("foo", "bar").With("", "empty-key").With("foo", nil).With("func", func() {})
+	d.SetOutput(&buf)
+	SetFormat(Plain)
+	SetUseColors(false)
+	SetTimestamp(&Timestamp{Format: "2006"})
+	d.Debugf("%s %s %t", "foo", "bar", true)
+
+	t.Log(buf.String())
+}
+
+func TestJSONWritePrint(t *testing.T) {
+	var buf bytes.Buffer
+	d := getDebugger().With("foo", "bar").With("", "empty-key").With("foo", nil).With("func", func() {}).With("age", 42).With("is", true)
+	d.SetOutput(&buf)
+	SetFormat(JSON)
+	SetTimestamp(&Timestamp{Format: "2006"})
+	d.Debug("foo", "bar", true)
+	assert.Equal(t, "{\"timestamp\":\"2025\",\"namespace\":\"test-namespace\",\"fields\":{\"(empty)\":\"empty-key\",\"age\":42,\"foo\":null,\"func\":\"(not serializable)\",\"is\":true},\"message\":\"foobartrue\"}\n", buf.String())
+	t.Log(buf.String())
+}
+
+func TestPlainWritePrint(t *testing.T) {
+	var buf bytes.Buffer
+	d := getDebugger()
+	d.SetOutput(&buf)
+	SetTimestamp(&Timestamp{Format: time.Kitchen})
+	SetUseColors(false)
+	SetFormat(Plain)
+	SetTimestamp(&Timestamp{Format: time.Kitchen})
+	d.Debugf("%s %s %t", "foo", "bar", true)
+	t.Log(buf.String())
 }

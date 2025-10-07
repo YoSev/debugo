@@ -1,7 +1,7 @@
 package debugo
 
 import (
-	"fmt"
+	"encoding/json"
 	"io"
 	"maps"
 	"sync"
@@ -31,33 +31,41 @@ func New(namespace string) *Debugger {
 	return newDebugger(namespace)
 }
 
-func (d *Debugger) Extend(namespace string) *Debugger {
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-
-	n := newDebugger(d.namespace + ":" + namespace)
-	n.color = d.color
-	n.lastLog = d.lastLog
-	n.output = d.output
-	n.mutex = d.mutex
-	return n
-}
-
-func (d *Debugger) With(kv ...any) *Debugger {
+// With clones the debugger instance and adds a key-value pair to its fields (json serializeable)
+func (d *Debugger) With(key string, value any) *Debugger {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 
 	n := *d
 	maps.Copy(n.fields, d.fields)
 
-	for i := 0; i+1 < len(kv); i += 2 {
-		key := fmt.Sprint(kv[i]) // ensures key is always a string
-		n.fields[key] = kv[i+1]
+	if key == "" {
+		key = "(empty)"
 	}
 
+	if value == nil {
+		value = nil
+	}
+
+	if _, err := json.Marshal(value); err != nil {
+		value = "(not serializable)"
+	}
+
+	n.fields[key] = value
 	return &n
 }
 
+// Extend creates a new debugger instance with an extended namespace
+func (d *Debugger) Extend(namespace string) *Debugger {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+
+	n := *d
+	n.namespace = d.namespace + ":" + namespace
+	return &n
+}
+
+// SetOutput sets the output writer for the debugger instance
 func (d *Debugger) SetOutput(output io.Writer) {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
