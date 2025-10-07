@@ -1,7 +1,9 @@
 package debugo
 
 import (
+	"fmt"
 	"io"
+	"maps"
 	"sync"
 	"time"
 
@@ -19,6 +21,8 @@ type Debugger struct {
 	lastLog time.Time
 
 	output io.Writer
+
+	fields map[string]any
 
 	mutex *sync.Mutex
 }
@@ -39,6 +43,21 @@ func (d *Debugger) Extend(namespace string) *Debugger {
 	return n
 }
 
+func (d *Debugger) With(kv ...any) *Debugger {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+
+	n := *d
+	maps.Copy(n.fields, d.fields)
+
+	for i := 0; i+1 < len(kv); i += 2 {
+		key := fmt.Sprint(kv[i]) // ensures key is always a string
+		n.fields[key] = kv[i+1]
+	}
+
+	return &n
+}
+
 func (d *Debugger) SetOutput(output io.Writer) {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
@@ -54,6 +73,8 @@ func newDebugger(namespace string) *Debugger {
 		lastLog: time.Now(),
 
 		output: nil,
+
+		fields: make(map[string]any),
 
 		mutex: &sync.Mutex{}}
 }

@@ -49,6 +49,22 @@ func TestDebug(t *testing.T) {
 	assert.Equal(t, expected, output, "Must have no colors")
 }
 
+func TestDebugWithFields(t *testing.T) {
+	var buf bytes.Buffer
+	d := getDebugger()
+	d.SetOutput(&buf)
+
+	x := d.With("key1", "value1").With("key2", 42)
+
+	x.Debug(testMessage)
+
+	assert.True(t, hasANSI(buf.String()), "Must have no colors")
+
+	output := strings.TrimSpace(stripANSI(buf.String())) // Strip colors and trim whitespace
+	expected := strings.TrimSpace(fmt.Sprintf("%s key1=value1 key2=42 %s +0ms\n", namespace, testMessage))
+	assert.Equal(t, expected, output, "Must have fields")
+}
+
 func TestDebugGlobalOutput(t *testing.T) {
 	var buf bytes.Buffer
 	d := getDebugger()

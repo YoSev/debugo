@@ -47,6 +47,10 @@ func (d *Debugger) write(message ...any) {
 		parts = append(parts, d.namespace)
 	}
 
+	if f := d.formatFields(); f != "" {
+		parts = append(parts, f)
+	}
+
 	parts = append(parts, msg)
 	parts = append(parts, fmt.Sprintf("+%s", prettyPrintDuration(d.elapsed())))
 
@@ -58,4 +62,17 @@ func (d *Debugger) write(message ...any) {
 	} else if o := GetOutput(); o != nil {
 		_, _ = fmt.Fprint(o, log)
 	}
+}
+
+func (d *Debugger) formatFields() string {
+	if len(d.fields) == 0 {
+		return ""
+	}
+
+	parts := make([]string, 0, len(d.fields))
+	for k, v := range d.fields {
+		parts = append(parts, fmt.Sprintf("%s=%v", k, v))
+	}
+
+	return strings.Join(parts, " ")
 }
