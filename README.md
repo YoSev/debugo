@@ -4,6 +4,8 @@
   <img src="debugo.png" width="500" title="debugo">
 </p>
 
+[![Coverage Status](https://coveralls.io/repos/github/YoSev/debugo/badge.svg?branch=main)](https://coveralls.io/github/YoSev/debugo?branch=main)
+
 A lightweight, colorful, and flexible debugging utility for Go — inspired by [debug](https://github.com/debug-js/debug) in Node.js.
 
 `debugo` provides namespaced, timestamped, and color-coded logging with support for inclusion/exclusion patterns and pluggable output streams.

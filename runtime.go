@@ -32,7 +32,7 @@ type Timestamp struct {
 	Format string
 }
 
-// Set the global color usage for debugging.
+// SetUseColors sets the global color usage for debugging.
 func SetUseColors(use bool) {
 	runtime.mutex.Lock()
 	defer runtime.mutex.Unlock()
@@ -40,7 +40,7 @@ func SetUseColors(use bool) {
 	runtime.useColors = use
 }
 
-// GetNamespace retrieves the current global color usage for debugging.
+// GetUseColors retrieves the current global color usage for debugging.
 func GetUseColors() bool {
 	runtime.mutex.RLock()
 	defer runtime.mutex.RUnlock()
@@ -48,7 +48,7 @@ func GetUseColors() bool {
 	return runtime.useColors
 }
 
-// Set the global namespace for debugging.
+// SetNamespace sets the global namespace for debugging.
 func SetNamespace(namespace string) {
 	runtime.mutex.Lock()
 	defer runtime.mutex.Unlock()
@@ -64,7 +64,7 @@ func GetNamespace() string {
 	return runtime.namespace
 }
 
-// Sets the global timestamp configuration for debugging.
+// SetTimestamp sets the global timestamp configuration for debugging.
 func SetTimestamp(timestamp *Timestamp) {
 	runtime.mutex.Lock()
 	defer runtime.mutex.Unlock()
@@ -72,7 +72,7 @@ func SetTimestamp(timestamp *Timestamp) {
 	runtime.timestamp = timestamp
 }
 
-// Retrieves the current global timestamp configuration for debugging.
+// GetTimestamp retrieves the current global timestamp configuration for debugging.
 func GetTimestamp() *Timestamp {
 	runtime.mutex.RLock()
 	defer runtime.mutex.RUnlock()
@@ -80,7 +80,7 @@ func GetTimestamp() *Timestamp {
 	return runtime.timestamp
 }
 
-// Sets the global output configuration for debugging.
+// SetOutput sets the global output configuration for debugging.
 func SetOutput(output io.Writer) {
 	runtime.mutex.Lock()
 	defer runtime.mutex.Unlock()
@@ -88,7 +88,7 @@ func SetOutput(output io.Writer) {
 	runtime.output = output
 }
 
-// Retrieves the current global output configuration for debugging.
+// GetOutput retrieves the current global output configuration for debugging.
 func GetOutput() io.Writer {
 	runtime.mutex.RLock()
 	defer runtime.mutex.RUnlock()

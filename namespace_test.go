@@ -11,77 +11,77 @@ func TestMatchNamespace(t *testing.T) {
 
 	// Empty debug string
 	SetNamespace("")
-	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+	assert.False(t, l.matchNamespace(), "they should be equal")
 
 	// Single wildcard
 	SetNamespace("*")
-	assert.Equal(t, l.matchNamespace(), true, "they should be equal")
+	assert.True(t, l.matchNamespace(), "they should be equal")
 
 	// Single negative pattern
 	SetNamespace("-test:*")
-	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+	assert.False(t, l.matchNamespace(), "they should be equal")
 
 	// Multiple negative patterns
 	SetNamespace("-test:a,-test:b")
-	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+	assert.False(t, l.matchNamespace(), "they should be equal")
 
 	// Leading/trailing spaces in debug string
 	SetNamespace("   test:a   ")
-	assert.Equal(t, l.matchNamespace(), true, "they should be equal")
+	assert.True(t, l.matchNamespace(), "they should be equal")
 
 	// Overlapping inclusion and exclusion
 	SetNamespace("test:*, -test:a")
-	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+	assert.False(t, l.matchNamespace(), "they should be equal")
 
 	// Overlapping inclusion and exclusion
 	SetNamespace("*, -test:a")
-	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+	assert.False(t, l.matchNamespace(), "they should be equal")
 
 	// Overlapping inclusion and exclusion
 	SetNamespace("*, -test:?")
-	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+	assert.False(t, l.matchNamespace(), "they should be equal")
 
 	// Overlapping inclusion and exclusion
 	SetNamespace("*, -test:*")
-	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+	assert.False(t, l.matchNamespace(), "they should be equal")
 
 	// Exact match
 	SetNamespace("test:a")
-	assert.Equal(t, l.matchNamespace(), true, "they should be equal")
+	assert.True(t, l.matchNamespace(), "they should be equal")
 
 	// Case sensitivity
 	SetNamespace("TEST:A")
-	assert.Equal(t, l.matchNamespace(), true, "they should be equal") // Assuming case-sensitive
+	assert.True(t, l.matchNamespace(), "they should be equal") // Assuming case-sensitive
 
 	// No namespace provided
 	l = New("")
 	SetNamespace("test:*")
-	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+	assert.False(t, l.matchNamespace(), "they should be equal")
 
 	// Non-matching wildcards
 	SetNamespace("test:x*")
-	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+	assert.False(t, l.matchNamespace(), "they should be equal")
 
 	// Invalid patterns
 	SetNamespace("--test:*")
-	assert.Equal(t, l.matchNamespace(), false, "they should be equal")
+	assert.False(t, l.matchNamespace(), "they should be equal")
 
 	// --- Optional pattern tests ---
 	l = New("info")
 	SetNamespace("info:?")
-	assert.Equal(t, l.matchNamespace(), true, "should match the base namespace")
+	assert.True(t, l.matchNamespace(), "should match the base namespace")
 
 	l = New("info:test")
 	SetNamespace("info:?")
-	assert.Equal(t, l.matchNamespace(), true, "should match the namespace with suffix")
+	assert.True(t, l.matchNamespace(), "should match the namespace with suffix")
 
 	l = New("info:test:sub")
 	SetNamespace("info:?")
-	assert.Equal(t, l.matchNamespace(), true, "should match namespace with deeper suffix")
+	assert.True(t, l.matchNamespace(), "should match namespace with deeper suffix")
 
 	l = New("other")
 	SetNamespace("info:?")
-	assert.Equal(t, l.matchNamespace(), false, "should not match unrelated namespace")
+	assert.False(t, l.matchNamespace(), "should not match unrelated namespace")
 }
 
 func TestMatchPattern(t *testing.T) {
@@ -132,4 +132,11 @@ func TestMatchPattern(t *testing.T) {
 			assert.Equal(t, tt.expected, result)
 		})
 	}
+}
+
+func TestMatchpatterns(t *testing.T) {
+	ok := matchPattern("namespace", "[invalid")
+	assert.False(t, ok)
+	ok = matchPattern("namespace", "[invalid:?")
+	assert.False(t, ok)
 }

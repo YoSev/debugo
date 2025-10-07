@@ -1,19 +1,65 @@
-name: Go
-
+name: CI
 on:
   push:
+    branches:
+      - "**"
+    tags-ignore:
+      - "v*.*.*"
   pull_request:
-
+    branches:
+      - "**"
 jobs:
-  build:
+  tests:
+    name: Unit and integrations tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: ["1.25.1"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+      - name: Run tests
+        run: |
+          make test+coverage
+      - uses: shogo82148/actions-goveralls@v1
+        with:
+          path-to-profile: coverage.txt
+
+
+  spellcheck:
+    name: Spellcheck
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.1"
+          cache: false
+      - name: Run spellcheck
+        run: |
+          go install github.com/client9/misspell/cmd/misspell@latest
+          misspell -error docs
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.23.4'
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.1"
+          cache: false
+      - name: Run lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.4
+          args: --timeout 5m
 
-    - name: Test
-      run: make test
+  govulncheck:
+    name: Check vulnerabilities
+    runs-on: ubuntu-latest
+    steps:
+      - id: govulncheck
+        uses: golang/govulncheck-action@v1

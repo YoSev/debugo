@@ -46,7 +46,23 @@ func TestDebug(t *testing.T) {
 
 	output := strings.TrimSpace(stripANSI(buf.String())) // Strip colors and trim whitespace
 	expected := strings.TrimSpace(testMessageExpected)
-	assert.Equal(t, output, expected, "Must have no colors")
+	assert.Equal(t, expected, output, "Must have no colors")
+}
+
+func TestDebugGlobalOutput(t *testing.T) {
+	var buf bytes.Buffer
+	d := getDebugger()
+	d.SetOutput(&buf)
+	SetOutput(&buf)
+	d.SetOutput(nil)
+
+	d.Debug(testMessage)
+
+	assert.True(t, hasANSI(buf.String()), "Must have no colors")
+
+	output := strings.TrimSpace(stripANSI(buf.String())) // Strip colors and trim whitespace
+	expected := strings.TrimSpace(testMessageExpected)
+	assert.Equal(t, expected, output, "Must have no colors")
 }
 
 func TestDebugNoColors(t *testing.T) {
@@ -58,6 +74,29 @@ func TestDebugNoColors(t *testing.T) {
 	d.Debug(testMessage)
 
 	assert.False(t, hasANSI(buf.String()), "Must have no colors")
+}
+
+func TestDebugNonMatchingNamespace(t *testing.T) {
+	var buf bytes.Buffer
+	SetUseColors(false)
+	d := getDebugger()
+	d.SetOutput(&buf)
+
+	d.Debug("")
+
+	assert.Empty(t, buf.String(), "Must have no message")
+}
+
+func TestDebugEmptyMessage(t *testing.T) {
+	var buf bytes.Buffer
+	SetUseColors(false)
+	d := getDebugger()
+	d.SetOutput(&buf)
+
+	SetNamespace("does:not:exist")
+	d.Debug("test")
+
+	assert.Empty(t, buf.String(), "Must have no message")
 }
 
 func TestDebugWithColors(t *testing.T) {
@@ -85,7 +124,7 @@ func TestDebugf(t *testing.T) {
 	}
 }
 
-func TestDebugRaceCondition(t *testing.T) {
+func TestDebugRaceCondition(_ *testing.T) {
 	var buf bytes.Buffer
 	d := getDebugger()
 	d.SetOutput(&buf)

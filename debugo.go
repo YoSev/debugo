@@ -2,7 +2,6 @@ package debugo
 
 import (
 	"io"
-	"os"
 	"sync"
 	"time"
 
@@ -43,10 +42,6 @@ func (d *Debugger) Extend(namespace string) *Debugger {
 func (d *Debugger) SetOutput(output io.Writer) {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-
-	if output == nil {
-		output = os.Stderr
-	}
 
 	d.output = output
 }

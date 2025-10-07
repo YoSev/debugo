@@ -49,10 +49,7 @@ func matchPattern(namespace, pattern string) bool {
 		base := strings.TrimSuffix(pattern, ":?")
 		// Match exactly the base or the base followed by anything
 		regexPattern := "^" + regexp.QuoteMeta(base) + "(:.*)?$"
-		re, err := regexp.Compile(regexPattern)
-		if err != nil {
-			return false
-		}
+		re, _ := regexp.Compile(regexPattern) // can not fail due to QuoteMeta
 		return re.MatchString(namespace)
 	}
 

@@ -54,8 +54,8 @@ func (d *Debugger) write(message ...any) {
 
 	// Write to output
 	if d.output != nil {
-		fmt.Fprint(d.output, log)
+		_, _ = fmt.Fprint(d.output, log)
 	} else if o := GetOutput(); o != nil {
-		fmt.Fprint(o, log)
+		_, _ = fmt.Fprint(o, log)
 	}
 }
