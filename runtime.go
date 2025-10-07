@@ -6,6 +6,13 @@ import (
 	"sync"
 )
 
+type Format string
+
+const (
+	Plain Format = "plain"
+	Json  Format = "json"
+)
+
 type config struct {
 	namespace string
 	timestamp *Timestamp
@@ -13,6 +20,8 @@ type config struct {
 	output io.Writer
 
 	useColors bool
+
+	format Format
 
 	mutex *sync.RWMutex
 }
@@ -25,11 +34,29 @@ var runtime = &config{
 
 	useColors: true,
 
+	format: Plain,
+
 	mutex: &sync.RWMutex{},
 }
 
 type Timestamp struct {
 	Format string
+}
+
+// SetFormat sets the global output format for debugging.
+func SetFormat(format Format) {
+	runtime.mutex.Lock()
+	defer runtime.mutex.Unlock()
+
+	runtime.format = format
+}
+
+// GetFormat retrieves the current global output format for debugging.
+func GetFormat() Format {
+	runtime.mutex.RLock()
+	defer runtime.mutex.RUnlock()
+
+	return runtime.format
 }
 
 // SetUseColors sets the global color usage for debugging.

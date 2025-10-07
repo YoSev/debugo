@@ -42,11 +42,58 @@ func TestDebug(t *testing.T) {
 
 	d.Debug(testMessage)
 
-	assert.True(t, hasANSI(buf.String()), "Must have no colors")
+	assert.True(t, hasANSI(buf.String()))
 
 	output := strings.TrimSpace(stripANSI(buf.String())) // Strip colors and trim whitespace
 	expected := strings.TrimSpace(testMessageExpected)
-	assert.Equal(t, expected, output, "Must have no colors")
+	assert.Equal(t, expected, output)
+}
+
+func TestDebugJSON(t *testing.T) {
+	var buf bytes.Buffer
+	d := getDebugger()
+	d.SetOutput(&buf)
+	SetFormat(Json)
+	d.Debug(testMessage)
+	SetFormat(Plain)
+
+	assert.False(t, hasANSI(buf.String()))
+	output := strings.TrimSpace(stripANSI(buf.String())) // Strip colors and trim whitespace
+	expected := strings.TrimSpace("{\"namespace\":\"" + namespace + "\",\"message\":\"" + testMessage + "\"}")
+	assert.Equal(t, expected, output)
+}
+
+func TestDebugJSONWithField(t *testing.T) {
+	var buf bytes.Buffer
+	d := getDebugger()
+	d.SetOutput(&buf)
+	d = d.With("json", true).With("number", 123)
+	SetFormat(Json)
+	d.Debug(testMessage)
+	SetFormat(Plain)
+
+	assert.False(t, hasANSI(buf.String()))
+	output := strings.TrimSpace(stripANSI(buf.String())) // Strip colors and trim whitespace
+	expected := strings.TrimSpace("{\"namespace\":\"" + namespace + "\",\"fields\":{\"json\":true,\"number\":123},\"message\":\"" + testMessage + "\"}")
+	assert.Equal(t, expected, output)
+}
+
+func TestDebugJSONWithFieldTimestamp(t *testing.T) {
+	var buf bytes.Buffer
+	d := getDebugger()
+	d.SetOutput(&buf)
+
+	d = d.With("json", true).With("number", 123)
+	SetTimestamp(&Timestamp{Format: "2006"})
+	SetFormat(Json)
+	d.Debug(testMessage)
+	SetFormat(Plain)
+	SetTimestamp(nil)
+
+	assert.False(t, hasANSI(buf.String()))
+	output := strings.TrimSpace(stripANSI(buf.String())) // Strip colors and trim whitespace
+	expected := strings.TrimSpace("{\"timestamp\":\"" + fmt.Sprint(time.Now().Year()) + "\",\"namespace\":\"" + namespace + "\",\"fields\":{\"json\":true,\"number\":123},\"message\":\"" + testMessage + "\"}")
+	assert.Equal(t, expected, output)
 }
 
 func TestDebugWithFields(t *testing.T) {
@@ -58,7 +105,7 @@ func TestDebugWithFields(t *testing.T) {
 
 	x.Debug(testMessage)
 
-	assert.True(t, hasANSI(buf.String()), "Must have no colors")
+	assert.True(t, hasANSI(buf.String()))
 
 	output := strings.TrimSpace(stripANSI(buf.String())) // Strip colors and trim whitespace
 	expected := strings.TrimSpace(fmt.Sprintf("%s key1=value1 key2=42 %s +0ms\n", namespace, testMessage))
@@ -74,11 +121,11 @@ func TestDebugGlobalOutput(t *testing.T) {
 
 	d.Debug(testMessage)
 
-	assert.True(t, hasANSI(buf.String()), "Must have no colors")
+	assert.True(t, hasANSI(buf.String()))
 
 	output := strings.TrimSpace(stripANSI(buf.String())) // Strip colors and trim whitespace
 	expected := strings.TrimSpace(testMessageExpected)
-	assert.Equal(t, expected, output, "Must have no colors")
+	assert.Equal(t, expected, output)
 }
 
 func TestDebugNoColors(t *testing.T) {
@@ -89,7 +136,7 @@ func TestDebugNoColors(t *testing.T) {
 
 	d.Debug(testMessage)
 
-	assert.False(t, hasANSI(buf.String()), "Must have no colors")
+	assert.False(t, hasANSI(buf.String()))
 }
 
 func TestDebugNonMatchingNamespace(t *testing.T) {
@@ -100,7 +147,7 @@ func TestDebugNonMatchingNamespace(t *testing.T) {
 
 	d.Debug("")
 
-	assert.Empty(t, buf.String(), "Must have no message")
+	assert.Empty(t, buf.String())
 }
 
 func TestDebugEmptyMessage(t *testing.T) {
@@ -112,7 +159,7 @@ func TestDebugEmptyMessage(t *testing.T) {
 	SetNamespace("does:not:exist")
 	d.Debug("test")
 
-	assert.Empty(t, buf.String(), "Must have no message")
+	assert.Empty(t, buf.String())
 }
 
 func TestDebugWithColors(t *testing.T) {
@@ -123,7 +170,7 @@ func TestDebugWithColors(t *testing.T) {
 
 	d.Debug(testMessage)
 
-	assert.True(t, hasANSI(buf.String()), "Must have colors")
+	assert.True(t, hasANSI(buf.String()))
 }
 
 func TestDebugf(t *testing.T) {

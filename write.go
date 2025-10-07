@@ -1,10 +1,19 @@
 package debugo
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 )
+
+type asJson struct {
+	Timestamp string         `json:"timestamp,omitempty"`
+	Namespace string         `json:"namespace,omitempty"`
+	Fields    map[string]any `json:"fields,omitempty"`
+	Message   string         `json:"message,omitempty"`
+	ElapsedMs int64          `json:"elapsed_ms,omitempty"`
+}
 
 func (d *Debugger) Debug(message ...any) *Debugger {
 	d.write(message...)
@@ -26,6 +35,11 @@ func (d *Debugger) write(message ...any) {
 
 	msg := fmt.Sprint(message...)
 	if msg == "" {
+		return
+	}
+
+	if GetFormat() == Json {
+		d.writeJSON(message...)
 		return
 	}
 
@@ -61,6 +75,30 @@ func (d *Debugger) write(message ...any) {
 		_, _ = fmt.Fprint(d.output, log)
 	} else if o := GetOutput(); o != nil {
 		_, _ = fmt.Fprint(o, log)
+	}
+}
+
+func (d *Debugger) writeJSON(message ...any) {
+	entry := asJson{
+		Namespace: d.namespace,
+		Message:   fmt.Sprint(message...),
+		Fields:    d.fields,
+		ElapsedMs: d.elapsed().Milliseconds(),
+	}
+
+	if t := GetTimestamp(); t != nil {
+		entry.Timestamp = time.Now().Format(t.Format)
+	}
+
+	data, err := json.Marshal(entry)
+	if err != nil {
+		return // fail silently
+	}
+
+	if d.output != nil {
+		_, _ = d.output.Write(append(data, '\n'))
+	} else if o := GetOutput(); o != nil {
+		_, _ = o.Write(append(data, '\n'))
 	}
 }
 
