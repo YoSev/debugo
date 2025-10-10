@@ -27,6 +27,7 @@ type Debugger struct {
 	mutex *sync.Mutex
 }
 
+// New creates a new debugger instance
 func New(namespace string) *Debugger {
 	return newDebugger(namespace)
 }

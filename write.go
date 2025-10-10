@@ -9,17 +9,19 @@ import (
 
 type asJSON struct {
 	Timestamp string         `json:"timestamp,omitempty"`
-	Namespace string         `json:"namespace,omitempty"`
+	Namespace string         `json:"namespace"`
 	Fields    map[string]any `json:"fields,omitempty"`
-	Message   string         `json:"message,omitempty"`
-	ElapsedMs int64          `json:"elapsed_ms,omitempty"`
+	Message   string         `json:"message"`
+	ElapsedMs int64          `json:"elapsed_ms"`
 }
 
+// Debug logs a message if the debuggers namespace matches
 func (d *Debugger) Debug(message ...any) *Debugger {
 	d.write(message...)
 	return d
 }
 
+// Debugf logs a formatted message if the debuggers namespace matches
 func (d *Debugger) Debugf(format string, message ...any) *Debugger {
 	d.write(fmt.Sprintf(format, message...))
 	return d

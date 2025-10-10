@@ -6,7 +6,7 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/YoSev/debugo/badge.svg?branch=main)](https://coveralls.io/github/YoSev/debugo?branch=main)
 
-A lightweight, colorful, and flexible debugging utility for Go — inspired by [debug](https://github.com/debug-js/debug) in Node.js.
+A lightweight, colorful, and flexible logging utility for Go — inspired by [debug](https://github.com/debug-js/debug) in Node.js.
 
 `debugo` provides namespaced, timestamped, and color-coded logging with support for inclusion/exclusion patterns and pluggable output streams.
 
@@ -17,9 +17,11 @@ A lightweight, colorful, and flexible debugging utility for Go — inspired by [
 - ✅ Namespaced debug logs (`namespace:subspace`)
 - 🎨 Automatic and consistent color assignment per namespace
 - 🕒 Time elapsed since last log (e.g., `+3ms`)
-- 🧪 Wildcard-based inclusion/exclusion filtering (`*`, '?', `-namespace:*`)
+- 🧪 Wildcard-based inclusion/exclusion filtering (`*`, `?`, `-namespace:*`)
 - 🔐 Thread-safe logging with `sync.RWMutex`
 - 🧰 Custom timestamp format and output writer support
+- 🎨 JSON output support
+- 🎨 Fields output support
 
 ---
 
