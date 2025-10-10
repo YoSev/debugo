@@ -15,11 +15,13 @@ type asJSON struct {
 	ElapsedMs int64          `json:"elapsed_ms,omitempty"`
 }
 
+// Debug logs a message if the debuggers namespace matches
 func (d *Debugger) Debug(message ...any) *Debugger {
 	d.write(message...)
 	return d
 }
 
+// Debugf logs a formatted message if the debuggers namespace matches
 func (d *Debugger) Debugf(format string, message ...any) *Debugger {
 	d.write(fmt.Sprintf(format, message...))
 	return d
